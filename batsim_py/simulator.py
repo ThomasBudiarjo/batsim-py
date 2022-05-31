@@ -90,7 +90,7 @@ class SimulatorHandler:
         >>> handler = SimulatorHandler("tcp://localhost:28000")
     """
 
-    def __init__(self, tcp_address: Optional[str] = None) -> None:
+    def __init__(self, tcp_address: Optional[str] = None, subprocess_timeout=60) -> None:
         if which('batsim') is None:
             raise ImportError('(HINT: you need to install Batsim. '
                               'Check the setup instructions here: '
@@ -107,6 +107,9 @@ class SimulatorHandler:
         self.__jobs: List[Job] = []
         self.__callbacks: Callbacks = defaultdict(list)
         self.__subscriptions: Listeners = defaultdict(list)
+
+        #added params
+        self.subprocess_timeout = subprocess_timeout
 
         # Batsim events handlers
         self.__batsim_event_handlers: dict = {
@@ -683,7 +686,7 @@ class SimulatorHandler:
         if self.__simulator:
             ack = BatsimMessage(self.current_time, [])
             self.__network.send(ack)
-            self.__simulator.wait(5)
+            self.__simulator.wait(self.subprocess_timeout)
         self.close()
 
     def __on_batsim_host_state_changed(self, event: ResourcePowerStateChangedBatsimEvent) -> None:
