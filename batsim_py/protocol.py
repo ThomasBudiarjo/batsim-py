@@ -601,7 +601,7 @@ class BatsimConfig:
         self.profiles_forwarded_on_submission: bool = cfg['profiles-forwarded-on-submission']
         self.dynamic_jobs_enabled: bool = cfg['dynamic-jobs-enabled']
         self.dynamic_jobs_acknowledged: bool = cfg['dynamic-jobs-acknowledged']
-        self.profile_reuse_enabled: bool = False
+        self.profile_reuse_enabled: bool = True
         self.forward_unknown_events: bool = cfg['forward-unknown-events']
 
 
