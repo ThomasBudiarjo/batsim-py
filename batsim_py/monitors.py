@@ -311,6 +311,10 @@ class HostMonitor(Monitor):
     def on_host_state_changed(self, sender: Host) -> None:
         self.update_info(sender)
 
+    def update_info_all(self):
+        for h in self.simulator.platform.hosts:
+            self.update_info(h)
+
     def update_info(self, h: Host) -> None:
         assert self.simulator
         t_start, power, state, pstate = self.__last_state[h.id]
@@ -318,6 +322,7 @@ class HostMonitor(Monitor):
         # Update Info
         time_spent = self.simulator.current_time - t_start
         energy_consumption = time_spent * (power or 0)
+        print(power,"ABCDSMDASLDAISJDIASJDLIAJSIDJILASJDLIASJD")
         energy_wasted = 0
 
         if state == HostState.IDLE:
