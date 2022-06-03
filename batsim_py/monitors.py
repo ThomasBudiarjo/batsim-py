@@ -322,7 +322,6 @@ class HostMonitor(Monitor):
         # Update Info
         time_spent = self.simulator.current_time - t_start
         energy_consumption = time_spent * (power or 0)
-        print(power,"ABCDSMDASLDAISJDIASJDLIAJSIDJILASJDLIASJD")
         energy_wasted = 0
 
         if state == HostState.IDLE:
