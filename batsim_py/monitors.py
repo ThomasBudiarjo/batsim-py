@@ -264,6 +264,7 @@ class HostMonitor(Monitor):
             'nb_switches': 0,
             'nb_computing_machines': 0,
         }
+        self.__host_info: dict = {}
 
         self.simulator.subscribe(
             SimulatorEvent.SIMULATION_BEGINS, self.on_simulation_begins)
@@ -319,6 +320,19 @@ class HostMonitor(Monitor):
         assert self.simulator
         t_start, power, state, pstate = self.__last_state[h.id]
 
+        if h.id not in self.__host_info:
+            self.__host_info[h.id] = {
+                'time_idle':  0,
+                'time_computing':  0,
+                'time_switching_off':  0,
+                'time_switching_on':  0,
+                'time_sleeping':  0,
+                'consumed_joules':  0,
+                'energy_waste':  0,
+                'nb_switches': 0,
+                'nb_computing_machines': 0,
+            }
+
         # Update Info
         time_spent = self.simulator.current_time - t_start
         energy_consumption = time_spent * (power or 0)
@@ -326,23 +340,31 @@ class HostMonitor(Monitor):
 
         if state == HostState.IDLE:
             self.__info['time_idle'] += time_spent
+            self.__host_info[h.id]['time_idle'] += time_spent
             energy_wasted = energy_consumption
         elif state == HostState.COMPUTING:
             self.__info['time_computing'] += time_spent
+            self.__host_info[h.id]['time_computing'] += time_spent
         elif state == HostState.SWITCHING_OFF:
             self.__info['time_switching_off'] += time_spent
+            self.__host_info[h.id]['time_switching_off'] += time_spent
             energy_wasted = energy_consumption
         elif state == HostState.SWITCHING_ON:
             self.__info['time_switching_on'] += time_spent
+            self.__host_info[h.id]['time_switching_on'] += time_spent
             energy_wasted = energy_consumption
         elif state == HostState.SLEEPING:
             self.__info['time_sleeping'] += time_spent
+            self.__host_info[h.id]['time_sleeping'] += time_spent
 
         self.__info['consumed_joules'] += energy_consumption
+        self.__host_info[h.id]['consumed_joules'] += energy_consumption
         self.__info['energy_waste'] += energy_wasted
+        self.__host_info[h.id]['energy_waste'] += energy_wasted
 
         if h.pstate and pstate.id != h.pstate.id:
             self.__info['nb_switches'] += 1
+            self.__host_info[h.id]['nb_switches'] += 1
 
         # Update Last State
         t_now = self.simulator.current_time
