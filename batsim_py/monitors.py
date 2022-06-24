@@ -284,6 +284,10 @@ class HostMonitor(Monitor):
         """
         return self.__info
 
+    @property
+    def host_info(self) -> dict:
+        return self.__host_info
+
     def to_csv(self, fn: str) -> None:
         """ Dump info to a CSV file. """
         self.to_dataframe().to_csv(fn, index=False)
