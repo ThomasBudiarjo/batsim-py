@@ -361,7 +361,7 @@ class HostMonitor(Monitor):
         self.__host_info[h.id]['consumed_joules'] += energy_consumption
         self.__info['energy_waste'] += energy_wasted
         self.__host_info[h.id]['energy_waste'] += energy_wasted
-
+    
         if h.pstate and pstate.id != h.pstate.id:
             self.__info['nb_switches'] += 1
             self.__host_info[h.id]['nb_switches'] += 1
