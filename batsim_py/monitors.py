@@ -90,6 +90,7 @@ class JobMonitor(Monitor):
 
         simulator.subscribe(SimulatorEvent.SIMULATION_BEGINS,
                             self.on_simulation_begins)
+        simulator.subscribe(JobEvent.STARTED, self.update_info)
         simulator.subscribe(JobEvent.COMPLETED, self.update_info)
         simulator.subscribe(JobEvent.REJECTED, self.update_info)
 
