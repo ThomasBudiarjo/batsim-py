@@ -115,8 +115,6 @@ class JobMonitor(Monitor):
         self.__info = {k: [] for k in self.__info.keys()}
 
     def update_info(self, sender: Job) -> None:
-        print(sender.state)
-        exit()
         alloc = ProcSet(*sender.allocation) if sender.allocation else None
         success = int(sender.state == JobState.COMPLETED_SUCCESSFULLY)
         self.__info['job_id'].append(sender.name)
@@ -217,6 +215,7 @@ class SchedulerMonitor(Monitor):
         assert self.simulator
 
         self.__info['makespan'] = self.simulator.current_time
+        self.__info['total_slowdown'] += sender.slowdown
         self.__info['mean_slowdown'] += sender.slowdown
         self.__info['mean_pp_slowdown'] += sender.per_processor_slowdown
         self.__info['mean_stretch'] += sender.stretch
