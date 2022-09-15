@@ -115,6 +115,8 @@ class JobMonitor(Monitor):
         self.__info = {k: [] for k in self.__info.keys()}
 
     def update_info(self, sender: Job) -> None:
+        print(sender.state)
+        exit()
         alloc = ProcSet(*sender.allocation) if sender.allocation else None
         success = int(sender.state == JobState.COMPLETED_SUCCESSFULLY)
         self.__info['job_id'].append(sender.name)
