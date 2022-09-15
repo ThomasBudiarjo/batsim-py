@@ -152,6 +152,7 @@ class SchedulerMonitor(Monitor):
         self.__info: dict = {
             'makespan': 0,
             'max_slowdown': 0,
+            'total_slowdown': 0,
             'max_stretch': 0,
             'max_waiting_time': 0,
             'max_turnaround_time': 0,
