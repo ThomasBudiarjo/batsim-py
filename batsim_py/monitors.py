@@ -334,6 +334,8 @@ class HostMonitor(Monitor):
                 'time_computing':  0,
                 'time_switching_off':  0,
                 'time_switching_on':  0,
+                'current_time_switching_off': 0,
+                'current_time_switching_on': 0,
                 'time_sleeping':  0,
                 'consumed_joules':  0,
                 'energy_waste':  0,
@@ -350,25 +352,35 @@ class HostMonitor(Monitor):
             self.__info['time_idle'] += time_spent
             self.__host_info[h.id]['time_idle'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
+            self.__host_info[h.id]['current_time_switching_off'] = 0
+            self.__host_info[h.id]['current_time_switching_on'] = 0
             energy_wasted = energy_consumption
         elif state == HostState.COMPUTING:
             self.__info['time_computing'] += time_spent
             self.__host_info[h.id]['time_computing'] += time_spent
             self.__host_info[h.id]['time_idle_current'] = 0
+            self.__host_info[h.id]['current_time_switching_off'] = 0
+            self.__host_info[h.id]['current_time_switching_on'] = 0
         elif state == HostState.SWITCHING_OFF:
             self.__info['time_switching_off'] += time_spent
             self.__host_info[h.id]['time_switching_off'] += time_spent
+            self.__host_info[h.id]['current_time_switching_off'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
+            self.__host_info[h.id]['current_time_switching_on'] = 0
             energy_wasted = energy_consumption
         elif state == HostState.SWITCHING_ON:
             self.__info['time_switching_on'] += time_spent
             self.__host_info[h.id]['time_switching_on'] += time_spent
+            self.__host_info[h.id]['current_time_switching_on'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
+            self.__host_info[h.id]['current_time_switching_off'] = 0
             energy_wasted = energy_consumption
         elif state == HostState.SLEEPING:
             self.__info['time_sleeping'] += time_spent
             self.__host_info[h.id]['time_sleeping'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
+            self.__host_info[h.id]['current_time_switching_off'] = 0
+            self.__host_info[h.id]['current_time_switching_on'] = 0
 
         self.__info['consumed_joules'] += energy_consumption
         self.__host_info[h.id]['consumed_joules'] += energy_consumption
