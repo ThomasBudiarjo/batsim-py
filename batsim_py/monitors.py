@@ -17,8 +17,8 @@ from .resources import Host
 from .resources import PowerStateType
 from .simulator import SimulatorHandler
 
-TIME_TO_SWITCH_ON = 1801
-TIME_TO_SWITCH_OFF = 2703
+TIME_TO_SWITCH_ON = 1800
+TIME_TO_SWITCH_OFF = 2700
 
 class Monitor(ABC):
     """ Simulation Monitor base class.
