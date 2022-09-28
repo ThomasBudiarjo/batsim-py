@@ -17,6 +17,8 @@ from .resources import Host
 from .resources import PowerStateType
 from .simulator import SimulatorHandler
 
+TIME_TO_SWITCH_ON = 1801
+TIME_TO_SWITCH_OFF = 2703
 
 class Monitor(ABC):
     """ Simulation Monitor base class.
@@ -336,6 +338,9 @@ class HostMonitor(Monitor):
                 'time_switching_on':  0,
                 'current_time_switching_off': 0,
                 'current_time_switching_on': 0,
+                'time_left_to_switch_off': 0,
+                'time_left_to_switch_on': 0,
+                'time_to_ready':0,
                 'time_sleeping':  0,
                 'consumed_joules':  0,
                 'energy_waste':  0,
@@ -354,6 +359,9 @@ class HostMonitor(Monitor):
             self.__host_info[h.id]['time_idle_current'] += time_spent
             self.__host_info[h.id]['current_time_switching_off'] = 0
             self.__host_info[h.id]['current_time_switching_on'] = 0
+            self.__host_info[h.id]['time_left_to_switch_off'] = 0
+            self.__host_info[h.id]['time_left_to_switch_on'] = 0
+            self.__host_info[h.id]['time_to_ready'] = 0
             energy_wasted = energy_consumption
         elif state == HostState.COMPUTING:
             self.__info['time_computing'] += time_spent
@@ -361,12 +369,18 @@ class HostMonitor(Monitor):
             self.__host_info[h.id]['time_idle_current'] = 0
             self.__host_info[h.id]['current_time_switching_off'] = 0
             self.__host_info[h.id]['current_time_switching_on'] = 0
+            self.__host_info[h.id]['time_left_to_switch_off'] = 0
+            self.__host_info[h.id]['time_left_to_switch_on'] = 0
+            self.__host_info[h.id]['time_to_ready'] = 0
         elif state == HostState.SWITCHING_OFF:
             self.__info['time_switching_off'] += time_spent
             self.__host_info[h.id]['time_switching_off'] += time_spent
             self.__host_info[h.id]['current_time_switching_off'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
             self.__host_info[h.id]['current_time_switching_on'] = 0
+            self.__host_info[h.id]['time_left_to_switch_off'] = TIME_TO_SWITCH_OFF - self.__host_info[h.id]['current_time_switching_off']
+            self.__host_info[h.id]['time_left_to_switch_on'] = TIME_TO_SWITCH_ON
+            self.__host_info[h.id]['time_to_ready'] = self.__host_info[h.id]['time_left_to_switch_off'] + self.__host_info[h.id]['time_left_to_switch_on']
             energy_wasted = energy_consumption
         elif state == HostState.SWITCHING_ON:
             self.__info['time_switching_on'] += time_spent
@@ -374,6 +388,8 @@ class HostMonitor(Monitor):
             self.__host_info[h.id]['current_time_switching_on'] += time_spent
             self.__host_info[h.id]['time_idle_current'] += time_spent
             self.__host_info[h.id]['current_time_switching_off'] = 0
+            self.__host_info[h.id]['time_left_to_switch_off'] = 0
+            self.__host_info[h.id]['time_left_to_switch_on'] = TIME_TO_SWITCH_ON - self.__host_info[h.id]['current_time_switching_on']
             energy_wasted = energy_consumption
         elif state == HostState.SLEEPING:
             self.__info['time_sleeping'] += time_spent
@@ -381,7 +397,9 @@ class HostMonitor(Monitor):
             self.__host_info[h.id]['time_idle_current'] += time_spent
             self.__host_info[h.id]['current_time_switching_off'] = 0
             self.__host_info[h.id]['current_time_switching_on'] = 0
-
+            self.__host_info[h.id]['time_left_to_switch_off'] = 0
+            self.__host_info[h.id]['time_left_to_switch_on'] = TIME_TO_SWITCH_ON
+        
         self.__info['consumed_joules'] += energy_consumption
         self.__host_info[h.id]['consumed_joules'] += energy_consumption
         self.__info['energy_waste'] += energy_wasted
