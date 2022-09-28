@@ -1,5 +1,5 @@
 from collections import defaultdict
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Union
 from typing import Iterator, Set
 from typing import Optional
@@ -7,7 +7,7 @@ from typing import Sequence
 from typing import List
 
 
-class HostState(Enum):
+class HostState(IntEnum):
     """ Batsim Host State Types """
 
     UNAVAILABLE = 0
