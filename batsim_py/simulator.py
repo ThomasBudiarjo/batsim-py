@@ -631,7 +631,6 @@ class SimulatorHandler:
                     latest_switch_on_time = latest_ttr-TIME_TO_SWITCH_ON
                     latest_switch_on_time = max(latest_switch_on_time, 0)
                     latest_switch_on_time += self.current_time
-                    print("MASBROOO", host, host.time_to_ready, latest_ttr, latest_switch_on_time)
                     self.schedule_to_switch_on(host, latest_switch_on_time)
 
             if is_ready:
