@@ -284,9 +284,17 @@ class Host:
         self.__jobs: Set[str] = set()
         self.__pstates = None
         self.__current_pstate = None
+        self.__is_scheduled_to_switch_on = False
         self.__metadata = metadata
         self.__state_before_unavailable: Optional[HostState] = None
 
+        #addition to handle SA state aware
+        self.__current_time_switching_off = 0
+        self.__current_time_switching_on = 0
+        self.__time_left_to_switch_off = 0
+        self.__time_left_to_switch_on = 0
+        self.__time_to_ready = 0
+        
         if pstates:
             if len(set(p.id for p in pstates)) != len(pstates):
                 raise ValueError('Expected `pstates` argument to have unique '
@@ -408,6 +416,31 @@ class Host:
     def is_unavailable(self) -> bool:
         """ Whether it's possible to execute jobs or not. """
         return self.__state == HostState.UNAVAILABLE
+
+    #addition to handle SA state aware
+    @property
+    def is_scheduled_to_switch_on(self)-> bool:
+        return self.__is_scheduled_to_switch_on
+    
+    @property
+    def current_time_switching_off(self)-> float:
+        return self.__current_time_switching_off
+    
+    @property
+    def current_time_switching_on(self)-> float:
+        return self.__current_time_switching_on
+    
+    @property
+    def time_left_to_switch_off(self)-> float:
+        return self.__time_left_to_switch_off
+    
+    @property
+    def time_left_to_switch_on(self)-> float:
+        return self.__time_left_to_switch_on
+
+    @property
+    def time_to_ready(self)-> float:
+        return self.__time_to_ready
 
     @property
     def power(self) -> Optional[float]:
@@ -627,6 +660,27 @@ class Host:
         assert self.__state_before_unavailable
         self.__set_state(self.__state_before_unavailable)
         self.__state_before_unavailable = None
+
+
+    #addition to handle SA state aware
+    def _remove_scheduled_switch_on(self) -> None:
+        self.__is_scheduled_to_switch_on = False
+        
+    def  _set_current_time_switching_off(self, t:float)-> None:
+        self.__current_time_switching_off = t
+    
+    def  _set_current_time_switching_on(self, t:float)-> None:
+        self.__current_time_switching_on = t
+    
+    def  _set_time_left_to_switch_off(self, t:float)-> None:
+        self.__time_left_to_switch_off = t
+    
+    def _set_time_left_to_switch_on(self, t:float)-> None:
+        self.__time_left_to_switch_on = t
+
+    def _set_time_to_ready(self, t:float)-> None:
+        self.__time_to_ready = t
+
 
     def _allocate(self, job_id: str) -> None:
         """ Allocate the host for a job.

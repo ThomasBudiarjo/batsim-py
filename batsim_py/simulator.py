@@ -42,6 +42,9 @@ from .resources import Platform
 from .resources import Host
 from .utils import get_free_tcp_address
 
+TIME_TO_SWITCH_OFF = 2700
+TIME_TO_SWITCH_ON = 1800
+
 
 # Type alias
 EventSenders = Union[Host, Job, 'SimulatorHandler']
@@ -596,13 +599,19 @@ class SimulatorHandler:
 
             is_ready = True
             hosts = [self.__platform.get_host(h) for h in job.allocation]
-
-            # Check if all hosts are active and switch on sleeping hosts
+            latest_ttr = max([host.time_to_ready for host in hosts])
+            print(latest_ttr)
+            exit()
+            # Check if all hosts are active and switch on sleeping hosts at the right time?
             for host in hosts:
                 if not host.is_idle and not host.is_computing:
                     is_ready = False
-                if host.is_sleeping:
-                    self.switch_on([host.id])
+                # do not switch on, but make sure it is on at latest_ttr - switch_on?
+                if host.is_sleeping and not host.is_scheduled_to_switch_on:
+                    latest_switch_on_time = latest_ttr-TIME_TO_SWITCH_ON
+                    latest_switch_on_time = max(latest_switch_on_time, 0)
+                    latest_switch_on_time += self.current_time
+                    self.schedule_to_switch_on(host, latest_ttr)
 
             if is_ready:
                 job._start(self.current_time)
