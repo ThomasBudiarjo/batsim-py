@@ -665,7 +665,10 @@ class Host:
     #addition to handle SA state aware
     def _remove_scheduled_switch_on(self) -> None:
         self.__is_scheduled_to_switch_on = False
-        
+
+    def _set_scheduled_switch_on(self) -> None:
+        self.__is_scheduled_to_switch_on = True
+
     def  _set_current_time_switching_off(self, t:float)-> None:
         self.__current_time_switching_off = t
     

@@ -513,6 +513,28 @@ class SimulatorHandler:
             self.__set_batsim_host_pstate(host.id, ending_pstate.id)
             self.__dispatch_event(HostEvent.STATE_CHANGED, host)
 
+    def make_sure_host_on(self, host:Host, current_time:float):
+        # skip_states = [HostState.IDLE, HostState.COMPUTING, HostState.SWITCHING_ON]
+        if host.is_idle or host.is_computing or host.is_switching_on:
+            host._remove_scheduled_switch_on()
+            return
+        if host.is_sleeping:
+            self.switch_on(hosts_id=[host.id])
+            host._remove_scheduled_switch_on()
+        elif host.is_switching_off:
+            # rare cases, where the calculated time to switch off is not accurate
+            make_sure_host_on_func = lambda at, host_=host: self.make_sure_host_on(host_, at)
+            at += self.current_time + 5
+            self.set_callback(at, make_sure_host_on_func)
+            
+    def schedule_to_switch_on(self, host:Host, at:float)-> None:
+        if at == self.current_time:
+            self.switch_on([host.id])
+            return
+        host._set_scheduled_switch_on()
+        make_sure_host_on_func = lambda current_time, host_=host: self.make_sure_host_on(host_, current_time)
+        self.set_callback(at, make_sure_host_on_func)
+
     def switch_off(self, hosts_id: Sequence[int]) -> None:
         """ Switch off hosts.
 
@@ -600,8 +622,6 @@ class SimulatorHandler:
             is_ready = True
             hosts = [self.__platform.get_host(h) for h in job.allocation]
             latest_ttr = max([host.time_to_ready for host in hosts])
-            print("latest ttr hosts for job", latest_ttr)
-            exit()
             # Check if all hosts are active and switch on sleeping hosts at the right time?
             for host in hosts:
                 if not host.is_idle and not host.is_computing:
