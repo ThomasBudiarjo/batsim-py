@@ -398,11 +398,11 @@ class HostMonitor(Monitor):
             self.__host_info[h.id]['time_left_to_switch_on'] = TIME_TO_SWITCH_ON
             
         self.__host_info[h.id]['time_to_ready'] = self.__host_info[h.id]['time_left_to_switch_off'] + self.__host_info[h.id]['time_left_to_switch_on']
-        h._set_current_time_switching_off = self.__host_info[h.id]['current_time_switching_off']
-        h._set_current_time_switching_on = self.__host_info[h.id]['current_time_switching_on']
-        h._set_time_left_to_switch_off = self.__host_info[h.id]['time_left_to_switch_off']
-        h._set_time_left_to_switch_on = self.__host_info[h.id]['time_left_to_switch_on'] 
-        h._set_time_to_ready = self.__host_info[h.id]['time_to_ready']
+        h._set_current_time_switching_off(self.__host_info[h.id]['current_time_switching_off'])
+        h._set_current_time_switching_on(self.__host_info[h.id]['current_time_switching_on'])
+        h._set_time_left_to_switch_off(self.__host_info[h.id]['time_left_to_switch_off'])
+        h._set_time_left_to_switch_on(self.__host_info[h.id]['time_left_to_switch_on'])
+        h._set_time_to_ready(self.__host_info[h.id]['time_to_ready'])
         
         self.__info['consumed_joules'] += energy_consumption
         self.__host_info[h.id]['consumed_joules'] += energy_consumption
