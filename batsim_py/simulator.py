@@ -600,7 +600,7 @@ class SimulatorHandler:
             is_ready = True
             hosts = [self.__platform.get_host(h) for h in job.allocation]
             latest_ttr = max([host.time_to_ready for host in hosts])
-            print(latest_ttr)
+            print("latest ttr hosts for job", latest_ttr)
             exit()
             # Check if all hosts are active and switch on sleeping hosts at the right time?
             for host in hosts:
