@@ -706,16 +706,16 @@ class SimulatorHandler:
             if h.is_switching_off:
                 h._set_off()
                 self.__dispatch_event(HostEvent.STATE_CHANGED, h)
-                self.__dispatch_event(HostEvent.SLEEP)
+                self.__dispatch_event(HostEvent.SLEEP,h)
             elif h.is_switching_on:
                 h._set_on()
                 self.__dispatch_event(HostEvent.STATE_CHANGED, h)
-                self.__dispatch_event(HostEvent.ON)
+                self.__dispatch_event(HostEvent.ON,h)
             elif (h.is_idle or h.is_computing) and h.pstate.id != event.state:
                 if h.is_idle:
-                    self.__dispatch_event(HostEvent.COMPUTING)
+                    self.__dispatch_event(HostEvent.COMPUTING,h)
                 elif h.is_computing:
-                    self.__dispatch_event(HostEvent.IDLE)
+                    self.__dispatch_event(HostEvent.IDLE,h)
                 h._set_computation_pstate(event.state)
                 self.__dispatch_event(
                     HostEvent.COMPUTATION_POWER_STATE_CHANGED, h)
