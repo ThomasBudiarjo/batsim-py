@@ -11,10 +11,10 @@ class HostState(IntEnum):
     """ Batsim Host State Types """
 
     UNAVAILABLE = 0
-    SLEEPING = 1
-    SWITCHING_OFF = 2
-    SWITCHING_ON = 3
-    IDLE = 4
+    IDLE = 1
+    SWITCHING_ON = 2
+    SLEEPING = 3
+    SWITCHING_OFF = 4
     COMPUTING = 5
 
     def __str__(self) -> str:
