@@ -323,10 +323,13 @@ class HostMonitor(Monitor):
 
     def update_info_all(self):
         for h in self.simulator.platform.hosts:
-            self.update_info(h)
+            self.update_info_(h)
 
     def update_info(self, h: Host) -> None:
         assert self.simulator
+        self.update_info_all()
+
+    def update_info_(self, h:Host) -> None:
         t_start, power, state, pstate = self.__last_state[h.id]
 
         if h.id not in self.__host_info:
