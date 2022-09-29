@@ -157,7 +157,6 @@ class SimulatorHandler:
                             assert job.start_time is not None
                             runtime = self.current_time - job.start_time
                         job_release_t = job.walltime - runtime
-                        print("NGEHEK",job, self.current_time, job.start_time, runtime)
                     else:
                         job_release_t = np.inf
 
