@@ -524,7 +524,7 @@ class SimulatorHandler:
         elif host.is_switching_off:
             # rare cases, where the calculated time to switch off is not accurate
             make_sure_host_on_func = lambda at, host_=host: self.make_sure_host_on(host_, at)
-            at += self.current_time + 5
+            at = self.current_time + 5
             self.set_callback(at, make_sure_host_on_func)
             
     def schedule_to_switch_on(self, host:Host, at:float)-> None:
@@ -631,7 +631,7 @@ class SimulatorHandler:
                     latest_switch_on_time = latest_ttr-TIME_TO_SWITCH_ON
                     latest_switch_on_time = max(latest_switch_on_time, 0)
                     latest_switch_on_time += self.current_time
-                    self.schedule_to_switch_on(host, latest_ttr)
+                    self.schedule_to_switch_on(host, latest_switch_on_time)
 
             if is_ready:
                 job._start(self.current_time)
