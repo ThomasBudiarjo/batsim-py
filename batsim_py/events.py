@@ -14,6 +14,12 @@ class HostEvent(Enum):
     """ Host Event Types """
     STATE_CHANGED = 0
     COMPUTATION_POWER_STATE_CHANGED = 1
+    SWITCHING_OFF = 2
+    SWITCHING_ON = 3
+    SLEEP = 4
+    ON = 5
+    IDLE = 6
+    COMPUTING = 7
 
 
 class SimulatorEvent(Enum):

@@ -610,6 +610,7 @@ class SimulatorHandler:
                     if not host.is_computing:
                         host._start_computing()
                         self.__dispatch_event(HostEvent.STATE_CHANGED, host)
+                        self.__dispatch_event(HostEvent.COMPUTING, host)
 
                 self.__dispatch_event(JobEvent.STARTED, job)
                 # Sync Batsim
@@ -701,17 +702,24 @@ class SimulatorHandler:
         for h_id in event.resources:
             h = self.__platform.get_host(h_id)
             assert h.pstate
-
+    
             if h.is_switching_off:
                 h._set_off()
                 self.__dispatch_event(HostEvent.STATE_CHANGED, h)
+                self.__dispatch_event(HostEvent.SLEEP)
             elif h.is_switching_on:
                 h._set_on()
                 self.__dispatch_event(HostEvent.STATE_CHANGED, h)
+                self.__dispatch_event(HostEvent.ON)
             elif (h.is_idle or h.is_computing) and h.pstate.id != event.state:
+                if h.is_idle:
+                    self.__dispatch_event(HostEvent.COMPUTING)
+                elif h.is_computing:
+                    self.__dispatch_event(HostEvent.IDLE)
                 h._set_computation_pstate(event.state)
                 self.__dispatch_event(
                     HostEvent.COMPUTATION_POWER_STATE_CHANGED, h)
+                
 
             assert h.pstate.id == event.state, ('For some reason, the internal '
                                                 'platform differs from the '
