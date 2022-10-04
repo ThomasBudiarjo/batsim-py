@@ -160,6 +160,7 @@ class SchedulerMonitor(Monitor):
             'mean_pp_slowdown': 0,
             'mean_stretch': 0,
             'mean_waiting_time': 0,
+            'total_waiting_time': 0,
             'mean_turnaround_time': 0,
             'nb_jobs': 0,
             'nb_jobs_finished': 0,
@@ -221,6 +222,8 @@ class SchedulerMonitor(Monitor):
         self.__info['mean_pp_slowdown'] += sender.per_processor_slowdown
         self.__info['mean_stretch'] += sender.stretch
         self.__info['mean_waiting_time'] += sender.waiting_time
+        self.__info['mean_waiting_time'] += sender.waiting_time
+        self.__info['total_waiting_time'] += sender.waiting_time    
         self.__info['mean_turnaround_time'] += sender.turnaround_time
 
         self.__info['max_waiting_time'] = max(
