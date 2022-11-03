@@ -88,10 +88,30 @@ class JobMonitor(Monitor):
             'consumed_energy': [],
         }
 
+        self.__complete_info: dict = {
+            'job_id': [],
+            'workload_name': [],
+            'profile': [],
+            'submission_time': [],
+            'requested_number_of_resources': [],
+            'requested_time': [],
+            'success': [],
+            'final_state': [],
+            'starting_time': [],
+            'execution_time': [],
+            'finish_time': [],
+            'waiting_time': [],
+            'turnaround_time': [],
+            'stretch': [],
+            'allocated_resources': [],
+            'consumed_energy': [],
+        }
+
         simulator.subscribe(SimulatorEvent.SIMULATION_BEGINS,
                             self.on_simulation_begins)
         simulator.subscribe(JobEvent.STARTED, self.update_info)
         simulator.subscribe(JobEvent.COMPLETED, self.update_info)
+        simulator.subscribe(JobEvent.COMPLETED, self.update_complete_info)
         simulator.subscribe(JobEvent.REJECTED, self.update_info)
 
     @property
@@ -102,6 +122,15 @@ class JobMonitor(Monitor):
             A dict containing statistics.
         """
         return self.__info
+
+    @property
+    def complete_info(self) -> dict:
+        """ Get all the collected statistics.
+
+        Returns:
+            A dict containing statistics.
+        """
+        return self.__complete_info
 
     def to_csv(self, fn: str) -> None:
         """ Dump info to a CSV file. """
@@ -134,6 +163,25 @@ class JobMonitor(Monitor):
         self.__info['allocated_resources'].append(alloc)
         self.__info['consumed_energy'].append(-1)
 
+    def update_complete_info(self, sender: Job) -> None:
+        alloc = ProcSet(*sender.allocation) if sender.allocation else None
+        success = int(sender.state == JobState.COMPLETED_SUCCESSFULLY)
+        self.__complete_info['job_id'].append(sender.name)
+        self.__complete_info['workload_name'].append(sender.workload)
+        self.__complete_info['profile'].append(sender.profile.name)
+        self.__complete_info['submission_time'].append(sender.subtime)
+        self.__complete_info['requested_number_of_resources'].append(sender.res)
+        self.__complete_info['requested_time'].append(sender.walltime)
+        self.__complete_info['success'].append(success)
+        self.__complete_info['final_state'].append(str(sender.state))
+        self.__complete_info['starting_time'].append(sender.start_time)
+        self.__complete_info['execution_time'].append(sender.runtime)
+        self.__complete_info['finish_time'].append(sender.stop_time)
+        self.__complete_info['waiting_time'].append(sender.waiting_time)
+        self.__complete_info['turnaround_time'].append(sender.turnaround_time)
+        self.__complete_info['stretch'].append(sender.stretch)
+        self.__complete_info['allocated_resources'].append(alloc)
+        self.__complete_info['consumed_energy'].append(-1)
 
 class SchedulerMonitor(Monitor):
     """ Simulator Scheduler Monitor class.
