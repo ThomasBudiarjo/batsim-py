@@ -286,6 +286,7 @@ class Host:
         self.__current_pstate = None
         self.__metadata = metadata
         self.__state_before_unavailable: Optional[HostState] = None
+        self.__host_type = None
 
         if pstates:
             if len(set(p.id for p in pstates)) != len(pstates):
@@ -322,6 +323,10 @@ class Host:
             self.__pstates = tuple(sorted(pstates, key=lambda p: int(p.id)))
             self.__current_pstate = self.get_default_pstate()
 
+        #type=0 for cheap, type=1 for expensive hosts
+        print(self.id, self.get_pstate_by_type(PowerStateType.COMPUTATION)[0].watt_full)
+
+
     def __repr__(self) -> str:
         return "Host_%i" % self.id
 
@@ -337,6 +342,11 @@ class Host:
     def name(self) -> str:
         """ Host name. """
         return self.__name
+    
+    @property
+    def host_type(self) -> int:
+        """ for hetero psmp, different compute watt, different type"""
+        return self.__host_type
 
     @property
     def state(self) -> HostState:
