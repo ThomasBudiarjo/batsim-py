@@ -324,8 +324,10 @@ class Host:
             self.__current_pstate = self.get_default_pstate()
 
         #type=0 for cheap, type=1 for expensive hosts
-        print(self.id, self.get_pstate_by_type(PowerStateType.COMPUTATION)[0].watt_full)
-
+        watt_full = self.get_pstate_by_type(PowerStateType.COMPUTATION)[0].watt_full
+        self.__host_type = 0 if watt_full < 200 else 1
+        print(self.id, self.__host_type, watt_full)
+        
 
     def __repr__(self) -> str:
         return "Host_%i" % self.id
