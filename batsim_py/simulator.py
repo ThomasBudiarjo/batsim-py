@@ -273,6 +273,8 @@ class SimulatorHandler:
 
         self.__handle_batsim_events()
         self.platform.get_speed_from_platform_file(platform)
+        self.platform.generate_host_types()
+        
         if self.__simulation_time:
             self.__set_batsim_call_me_later(self.__simulation_time)
 

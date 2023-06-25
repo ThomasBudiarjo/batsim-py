@@ -286,7 +286,7 @@ class Host:
         self.__current_pstate = None
         self.__metadata = metadata
         self.__state_before_unavailable: Optional[HostState] = None
-        self.__host_type = None
+        self.__host_type: int = None
         self.__speed_dict = {}
 
         if pstates:
@@ -325,8 +325,7 @@ class Host:
             self.__current_pstate = self.get_default_pstate()
 
         #type=0 for cheap, type=1 for expensive hosts
-        watt_full = self.get_pstate_by_type(PowerStateType.COMPUTATION)[0].watt_full
-        self.__host_type = 0 if watt_full < 200 else 1
+        self.watt_full = self.get_pstate_by_type(PowerStateType.COMPUTATION)[0].watt_full
 
     def __repr__(self) -> str:
         return "Host_%i" % self.id
@@ -433,6 +432,9 @@ class Host:
     @property
     def computing_speed(self) -> float:
         return self.__speed_dict[PowerStateType.COMPUTATION]
+
+    def set_host_type(self, host_type):
+        self.__host_type = host_type
 
     def set_speed(self, speed_list):
         self.__speed_dict[PowerStateType.SLEEP] = speed_list[0]
@@ -749,6 +751,7 @@ class Platform:
             raise SystemError('The simulator expected resources id to '
                               'be a sequence starting from 0')
         self.__resources = tuple(sorted(resources, key=lambda h: h.id))
+        self.__host_type_dict = {}
 
     def get_speed_from_platform_file(self, platform_path):
         from bs4 import BeautifulSoup
@@ -763,6 +766,28 @@ class Platform:
             speed_list = [float(speed[:-1]) for speed in speed_list]
             h.set_speed(speed_list)
 
+    def generate_host_types(self):
+        watt_full_list = []
+        compute_speed_list = []
+        for h in self.hosts:
+            watt_full_list += [h.watt_full]
+            compute_speed_list += [h.computing_speed]
+        
+        # sort watt and speed, make sure it is correctly paired
+        sorted_watt_full_idx = sorted(range(len(watt_full_list)), key=watt_full_list.__getitem__)
+        watt_full_list = [watt_full_list[i] for i in sorted_watt_full_idx]
+        compute_speed_list = [compute_speed_list[i] for i in sorted_watt_full_idx]
+        
+        # different combination of watt and speed is different type
+        watt_speed_str_list = [str(watt_full_list[i])+"_"+str(compute_speed_list[i]) for i in range(len(watt_full_list))]
+        num_types = 0
+        for watt_speed_str in watt_speed_str_list:
+            if not (watt_speed_str in self.__host_type_dict.keys()):
+                self.__host_type_dict[watt_speed_str] = num_types
+                num_types += 1
+        for h in self.hosts:
+            watt_speed_str = str(h.watt_full)+"_"+str(h.computing_speed)
+            h.set_host_type(self.__host_type_dict[watt_speed_str])
 
     @property
     def size(self) -> int:
