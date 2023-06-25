@@ -424,11 +424,11 @@ class Converters:
         Returns:
             A sequence of power states.
         """
-        if "watt_per_state" not in properties:
+        if "wattage_per_state" not in properties:
             raise RuntimeError('Expected `watt_per_state` property to be '
                                'defined in the host.')
 
-        watt_per_state = properties["watt_per_state"].split(",")
+        watt_per_state = properties["wattage_per_state"].split(",")
         sleep_pstates = properties.get("sleep_pstates", None)
 
         pstates_id = {i: i for i in range(len(watt_per_state))}
@@ -485,7 +485,7 @@ class Converters:
         def get_host(r, allow_sharing):
             pstates = None
             props = r.get("properties", None)
-            if props and "watt_per_state" in props:
+            if props and "wattage_per_state" in props:
                 pstates = Converters.json_to_power_states(props)
 
             return Host(r['id'], r['name'], pstates, allow_sharing, props)
