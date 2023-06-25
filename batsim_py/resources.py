@@ -4,7 +4,7 @@ from typing import Union
 from typing import Iterator, Set
 from typing import Optional
 from typing import Sequence
-from typing import List
+from typing import List, Dict
 
 
 class HostState(Enum):
@@ -287,6 +287,7 @@ class Host:
         self.__metadata = metadata
         self.__state_before_unavailable: Optional[HostState] = None
         self.__host_type = None
+        self.__speed_dict = {}
 
         if pstates:
             if len(set(p.id for p in pstates)) != len(pstates):
@@ -428,6 +429,16 @@ class Host:
             return self.pstate.watt_full
         else:
             return self.pstate.watt_idle
+        
+    @property
+    def computing_speed(self) -> float:
+        return self.__speed_dict[PowerStateType.COMPUTATION]
+
+    def set_speed(self, speed_list):
+        self.__speed_dict[PowerStateType.SLEEP] = speed_list[0]
+        self.__speed_dict[PowerStateType.COMPUTATION] = speed_list[1]
+        self.__speed_dict[PowerStateType.SWITCHING_ON] = speed_list[2]
+        self.__speed_dict[PowerStateType.SWITCHING_OFF] = speed_list[3]
 
     def get_pstate_by_type(self, ps_type: PowerStateType) -> List[PowerState]:
         """ Get a power state by type.
@@ -738,6 +749,20 @@ class Platform:
             raise SystemError('The simulator expected resources id to '
                               'be a sequence starting from 0')
         self.__resources = tuple(sorted(resources, key=lambda h: h.id))
+
+    def get_speed_from_platform_file(self, platform_path):
+        from bs4 import BeautifulSoup
+        platform_data = None
+        with open(platform_path, 'r') as f:
+            platform_data = f.read()
+        platform_data = BeautifulSoup(platform_data, "xml")
+        # host_xml_list = platform_data.find_all('host')
+        for h in self.hosts:
+            host_xml = platform_data.find('host',{'id':str(h.id)})
+            speed_list = host_xml.get('speed').split(",")
+            speed_list = [float(speed[:-1]) for speed in speed_list]
+            h.set_speed(speed_list)
+
 
     @property
     def size(self) -> int:

@@ -55,6 +55,9 @@ Callback = Callable[[float], None]
 Callbacks = DefaultDict[float, List[Callback]]
 BatsimVerbosity = Literal["quiet", "network-only", "information", "debug"]
 
+# additional function to load platform, because speed is not returned
+# by batsim
+
 
 class Reservation:
     """ Describes the reservation of a host.
@@ -269,6 +272,7 @@ class SimulatorHandler:
         self.__network.bind()
 
         self.__handle_batsim_events()
+        self.platform.get_speed_from_platform_file(platform)
         if self.__simulation_time:
             self.__set_batsim_call_me_later(self.__simulation_time)
 
@@ -670,7 +674,6 @@ class SimulatorHandler:
             if event.type in self.__batsim_event_handlers:
                 assert isinstance(event.type, BatsimEventType)
                 self.__batsim_event_handlers[event.type](event)
-
         self.__current_time = msg.now
 
     def __send_requests(self) -> None:
