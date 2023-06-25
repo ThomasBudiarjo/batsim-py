@@ -752,6 +752,8 @@ class Platform:
                               'be a sequence starting from 0')
         self.__resources = tuple(sorted(resources, key=lambda h: h.id))
         self.__host_type_dict = {}
+        self.__host_type_watt_dict = {}
+        self.__host_type_compute_speed_dict = {}
 
     def get_speed_from_platform_file(self, platform_path):
         from bs4 import BeautifulSoup
@@ -779,11 +781,13 @@ class Platform:
         compute_speed_list = [compute_speed_list[i] for i in sorted_watt_full_idx]
         
         # different combination of watt and speed is different type
-        watt_speed_str_list = [str(watt_full_list[i])+"_"+str(compute_speed_list[i]) for i in range(len(watt_full_list))]
         num_types = 0
-        for watt_speed_str in watt_speed_str_list:
+        for i in range(len(watt_full_list)):
+            watt_speed_str = str(watt_full_list[i])+"_"+str(compute_speed_list[i])
             if not (watt_speed_str in self.__host_type_dict.keys()):
                 self.__host_type_dict[watt_speed_str] = num_types
+                self.__host_type_watt_dict[num_types] = watt_full_list[i]
+                self.__host_type_compute_speed_dict[num_types] = compute_speed_list[i]
                 num_types += 1
         for h in self.hosts:
             watt_speed_str = str(h.watt_full)+"_"+str(h.computing_speed)
@@ -793,6 +797,11 @@ class Platform:
     def size(self) -> int:
         """ The number of resources in the platform. """
         return len(self.__resources)
+    
+    @property
+    def num_host_types(self) -> int:
+        """ The number of host types in the platform. """
+        return len(self.__host_type_dict.keys())
 
     @property
     def power(self) -> float:
@@ -822,6 +831,9 @@ class Platform:
         for r in self.__resources:
             if isinstance(r, Host):
                 yield r
+
+    def get_compute_speed_by_type(self, chosen_type):
+        return self.__host_type_compute_speed_dict[chosen_type]
 
     def get_not_allocated_hosts(self) -> Sequence[Host]:
         """ Get available hosts.

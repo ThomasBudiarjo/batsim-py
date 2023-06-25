@@ -154,12 +154,16 @@ class SimulatorHandler:
                 release_t = 0.
                 for job_id in host.jobs:
                     job = next(j for j in self.__jobs if j.id == job_id)
-                    if job.walltime:
+                    walltime = job.walltime
+                    if walltime is None:
+                        if job.profile.cpu:
+                            walltime = job.profile.cpu/host.computing_speed
+                    if walltime:
                         runtime = 0.
                         if job.is_running:
                             assert job.start_time is not None
                             runtime = self.current_time - job.start_time
-                        job_release_t = job.walltime - runtime
+                        job_release_t = walltime - runtime
                     else:
                         job_release_t = np.inf
 
