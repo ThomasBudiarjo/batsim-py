@@ -276,7 +276,8 @@ class Host:
                  name: str,
                  pstates: Optional[Sequence[PowerState]] = None,
                  allow_sharing: bool = False,
-                 metadata: Optional[dict] = None) -> None:
+                 metadata: Optional[dict] = None,
+                 raw_id: Optional[int] = None) -> None:
         self.__id = int(id)
         self.__name = str(name)
         self.__state = HostState.IDLE
@@ -762,11 +763,12 @@ class Platform:
             platform_data = f.read()
         platform_data = BeautifulSoup(platform_data, "xml")
         # host_xml_list = platform_data.find_all('host')
-        for h in self.hosts:
-            host_xml = platform_data.find('host',{'id':str(h.id)})
+        for i,h in enumerate(self.hosts):
+            host_xml = platform_data.find('host',{'id':str(h.name)})
             speed_list = host_xml.get('speed').split(",")
             speed_list = [float(speed[:-1]) for speed in speed_list]
             h.set_speed(speed_list)
+
 
     def generate_host_types(self):
         watt_full_list = []
