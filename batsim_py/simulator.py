@@ -249,9 +249,14 @@ class SimulatorHandler:
         # There isn't an option to avoid exporting batsim results
         tmp_dir = tempfile.gettempdir() + "/batsim"
         cmd = (
-            'batsim -E --forward-profiles-on-submission '
+            'docker run '
+            '--net host '
+            # '-u $(id -u):$(id -g) '
+            f'-v {pwd}:/data '
+            'oarteam/batsim:latest ' 
+            '-E --forward-profiles-on-submission '
             '--disable-schedule-tracing --disable-machine-state-tracing '
-            f'-s {self.__network.address} -p {platform} -w {workload} '
+            f'-s {self.__network.address} -p /data/{platform} -w /data/{workload} '
             f'-v {verbosity}  -e {tmp_dir}'
         )
 
