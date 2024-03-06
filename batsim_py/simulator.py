@@ -1,6 +1,7 @@
 import atexit
 from collections import defaultdict
 import math
+import os
 from shutil import which
 import signal
 import subprocess
@@ -94,11 +95,11 @@ class SimulatorHandler:
     """
 
     def __init__(self, tcp_address: Optional[str] = None, subprocess_timeout=60) -> None:
-        if which('batsim') is None:
-            raise ImportError('(HINT: you need to install Batsim. '
-                              'Check the setup instructions here: '
-                              'https://batsim.readthedocs.io/en/latest/.). '
-                              'Run "batsim --version" to make sure it is working.')
+        # if which('batsim') is None:
+        #     raise ImportError('(HINT: you need to install Batsim. '
+        #                       'Check the setup instructions here: '
+        #                       'https://batsim.readthedocs.io/en/latest/.). '
+        #                       'Run "batsim --version" to make sure it is working.')
         self.__network = NetworkHandler(tcp_address or get_free_tcp_address())
         self.__current_time: float = 0.
         self.__simulator: Optional[subprocess.Popen] = None
@@ -247,7 +248,9 @@ class SimulatorHandler:
         self.__no_more_jobs_to_submit = False
 
         # There isn't an option to avoid exporting batsim results
-        tmp_dir = tempfile.gettempdir() + "/batsim"
+        # tmp_dir = tempfile.gettempdir() + "/batsim"
+        tmp_dir = "/data/batsim"
+        pwd = os.getcwd()
         cmd = (
             'docker run '
             '--net host '
